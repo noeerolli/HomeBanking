@@ -1,17 +1,21 @@
-﻿using HomeBanking.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using HomeBanking.Models;
 
 namespace HomeBanking.Models
 {
-    public class Client
+    public class ClientDTO
     {
-        
-        public long Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public ICollection<Account> Accounts { get; set; }
+        [JsonIgnore]
 
+        public long Id { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string Email { get; set; }
+
+        public ICollection<AccountDTO> Accounts { get; set; }
     }
 }

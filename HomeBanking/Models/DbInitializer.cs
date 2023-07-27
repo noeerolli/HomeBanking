@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace HomeBanking.Models
@@ -32,6 +33,31 @@ namespace HomeBanking.Models
                 }
 
                 
+            }
+
+
+
+
+
+            if (!context.Accounts.Any())
+            {
+                var clientNoe = context.Clients.FirstOrDefault(c => c.Email == "blabla@gmail.com");
+               
+                if (clientNoe != null)
+                {
+                    var accounts = new Account[]
+                    {
+                        new Account {ClientId = clientNoe.Id, CreationDate = DateTime.Now, Number = "00001", Balance = 100.000 }
+                    };
+                    foreach (Account account in accounts)
+                    {
+                        context.Accounts.Add(account);
+                    }
+                   // context.SaveChanges();
+
+                }
+
+
             }
 
             context.SaveChanges();
