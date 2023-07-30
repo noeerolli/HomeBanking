@@ -11,7 +11,7 @@ namespace HomeBanking.Controllers
 
 
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]")]    
 
     [ApiController]
 
@@ -27,7 +27,7 @@ namespace HomeBanking.Controllers
 
         {
 
-            _clientRepository = clientRepository;
+            _clientRepository = clientRepository;       //el clientRepository q estamos recibiendo por el constructor, lo asignamos a la propiedad privada, para luego poder usarlo en el controlador
 
         }
 
@@ -67,7 +67,7 @@ namespace HomeBanking.Controllers
 
                         LastName = client.LastName,
 
-                        Accounts = client.Accounts.Select(ac => new AccountDTO
+                        Accounts = client.Accounts.Select(ac => new AccountDTO     //por cada cuenta se crea un nuevo accountDTO
 
                         {
 
@@ -79,7 +79,7 @@ namespace HomeBanking.Controllers
 
                             Number = ac.Number
 
-                        }).ToList()
+                        }).ToList()          //guardamos todo en una lista dentro de Accounts
 
                     };
 

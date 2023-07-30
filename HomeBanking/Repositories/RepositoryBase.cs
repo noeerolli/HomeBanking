@@ -9,9 +9,9 @@ namespace HomeBanking.Repositories
 {
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
-        protected HomeBankingContext RepositoryContext { get; set; }
+        protected HomeBankingContext RepositoryContext { get; set; }    
 
-        public RepositoryBase(HomeBankingContext repositoryContext)
+        public RepositoryBase(HomeBankingContext repositoryContext)   
         {
             this.RepositoryContext = repositoryContext;
         }
@@ -24,11 +24,11 @@ namespace HomeBanking.Repositories
 
         public IQueryable<T> FindAll(Func<IQueryable<T>, IIncludableQueryable<T, object>> includes = null)
         {
-            IQueryable<T> queryable = this.RepositoryContext.Set<T>();
+            IQueryable<T> queryable = this.RepositoryContext.Set<T>();  //trae todo
 
             if (includes != null)
             {
-                queryable = includes(queryable);
+                queryable = includes(queryable);      //aplica una query a la query que ya realizó, la extiende
             }
             return queryable.AsNoTrackingWithIdentityResolution();
         }

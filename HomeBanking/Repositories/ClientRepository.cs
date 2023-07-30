@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace HomeBanking.Repositories
 {
-    public class ClientRepository : RepositoryBase<Client>, IClientRepository //hereda de repositori base e implementa IClientRep
+    public class ClientRepository : RepositoryBase<Client>, IClientRepository //hereda de repository base e implementa IClientRepository
     {
         public ClientRepository(HomeBankingContext repositoryContext) : base(repositoryContext)
         {
@@ -16,15 +16,15 @@ namespace HomeBanking.Repositories
 
         public Client FindById(long id)
         {
-            return FindByCondition(client => client.Id == id)
-                .Include(client => client.Accounts)
+            return FindByCondition(client => client.Id == id)     
+                .Include(client => client.Accounts)          //ademas de traer cliente, con include se agrega otra query para q traiga las cuentas asociadas
                 .FirstOrDefault();
         }
 
         public IEnumerable<Client> GetAllClients()
         {
             return FindAll()
-                .Include(client => client.Accounts)
+                .Include(client => client.Accounts)  
                 .ToList();
         }
 

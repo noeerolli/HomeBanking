@@ -24,7 +24,7 @@ namespace HomeBanking
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)  //Inyección de dependencias, componentes disponibles p ser usados por la app
         {
             services.AddRazorPages();
 
@@ -32,10 +32,12 @@ namespace HomeBanking
 
              x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
 
-            //Agregamos el contexto de la base de datos
+            //Agregamos el contexto de la base de datos - c cadena conexión 
             services.AddDbContext<HomeBankingContext>(options => options.UseSqlServer(Configuration.GetConnectionString("HomeBankingConnection")));
 
             services.AddScoped<IClientRepository, ClientRepository>();
+
+            services.AddScoped<IAccountRepository, AccountRepository>();
 
         }
 
