@@ -20,6 +20,7 @@ namespace HomeBanking.Repositories
                 .Include(client => client.Accounts)          //ademas de traer cliente, con include se agrega otra query para q traiga las cuentas asociadas
                 .Include(client => client.ClientLoans)
                     .ThenInclude(cl => cl.Loan)
+                .Include(client => client.Cards)
                 .FirstOrDefault();
         }
 
@@ -29,6 +30,7 @@ namespace HomeBanking.Repositories
                 .Include(client => client.Accounts)
                 .Include(client => client.ClientLoans)
                     .ThenInclude(cl => cl.Loan)
+                .Include(client => client.Cards)
                 .ToList();
         }
 
