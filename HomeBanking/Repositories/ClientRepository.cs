@@ -14,9 +14,11 @@ namespace HomeBanking.Repositories
         {
         }
 
+
+        //hereda todos los métodos, pero implemento los metodos establecidos en la interfaz
         public Client FindById(long id)
         {
-            return FindByCondition(client => client.Id == id)     
+            return FindByCondition(client => client.Id == id)   //retorna un objeto de tipo cliente
                 .Include(client => client.Accounts)          //ademas de traer cliente, con include se agrega otra query para q traiga las cuentas asociadas
                 .Include(client => client.ClientLoans)
                     .ThenInclude(cl => cl.Loan)
@@ -34,10 +36,23 @@ namespace HomeBanking.Repositories
                 .ToList();
         }
 
+       
+
         public void Save(Client client)
         {
             Create(client);
             SaveChanges();
         }
+
+        public Client FindByEmail(string email)
+        {
+            return FindByCondition(client => client.Email.ToUpper() == email.ToUpper())
+            .Include(client => client.Accounts)
+            .Include(client => client.ClientLoans)
+                .ThenInclude(cl => cl.Loan)
+            .Include(client => client.Cards)
+            .FirstOrDefault();
+        }
+
     }
 }

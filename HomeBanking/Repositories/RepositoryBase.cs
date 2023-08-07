@@ -9,9 +9,9 @@ namespace HomeBanking.Repositories
 {
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
-        protected HomeBankingContext RepositoryContext { get; set; }    
+        protected HomeBankingContext RepositoryContext { get; set; }    //creamos una propiedad con el tipo de dato HomeBContext, le damos un nombre de variable y sus getter y setter  / protected porq puede acceder la clase y sus desendientes
 
-        public RepositoryBase(HomeBankingContext repositoryContext)   
+        public RepositoryBase(HomeBankingContext repositoryContext)   //constructor, cuando las clases que hereden sean instanciadas, voy a pasarle algo de tipo HBContext
         {
             this.RepositoryContext = repositoryContext;
         }

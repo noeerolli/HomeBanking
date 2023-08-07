@@ -6,7 +6,7 @@ namespace HomeBanking.Models
 {
     public class DbInitializer
     {
-        public static void Initialize(HomeBankingContext context) 
+        public static void Initialize(HomeBankingContext context)   //método estático, lo voy a poder llamar sin necesidad de crear una instancia - recibe un parámetro de tipo HBContext
         {
             if (!context.Clients.Any())
             {

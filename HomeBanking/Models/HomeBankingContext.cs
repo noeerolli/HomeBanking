@@ -2,11 +2,11 @@
 
 namespace HomeBanking.Models
 {
-    public class HomeBankingContext : DbContext  //contexto p la conexión a la base de datos
+    public class HomeBankingContext : DbContext  //hereda de DbContext - representa un sesión con la base de datos, se puede usar para consultar y guardar instancias de sus entidades
     {
-        public HomeBankingContext(DbContextOptions<HomeBankingContext> options) : base(options) {}
+        public HomeBankingContext(DbContextOptions<HomeBankingContext> options) : base(options) {}  //constructor base
 
-        public DbSet<Client> Clients  { get; set; }  //agregamos la colleción de tipo Client
+        public DbSet<Client> Clients  { get; set; }  //agregamos la colleción de tipo Client - representa una tabla en la base de datos
 
         public DbSet<Account> Accounts { get; set; }
 

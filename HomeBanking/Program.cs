@@ -11,18 +11,18 @@ using System.Threading.Tasks;
 
 namespace HomeBanking
 {
-    public class Program
+    public class Program   //  Punto de inicio de la app  -   configuración y ejecución - configuramos lo q necesite el cliente para poder conectarse a nuestro servicio
     {
         public static void Main(string[] args)
         {
             //CreateHostBuilder(args).Build().Run();
-            var host = CreateHostBuilder(args).Build();
-            using(var scope = host.Services.CreateScope())
+            var host = CreateHostBuilder(args).Build();   //creamos un host  - configura el entorno de ejecución y servivios necesarios para q la app funcione
+            using(var scope = host.Services.CreateScope())  //alcance de nuestra app
             {
                 var services = scope.ServiceProvider;
                 try
                 {
-                    var context = services.GetRequiredService<HomeBankingContext>();
+                    var context = services.GetRequiredService<HomeBankingContext>();   //inyectamos el contexto
                     DbInitializer.Initialize(context);
                 }
                 catch(Exception ex) 
