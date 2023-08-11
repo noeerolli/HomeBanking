@@ -32,17 +32,17 @@ namespace HomeBanking.Controllers
                 if (user == null || !String.Equals(user.Password, client.Password))
                     return Unauthorized();
 
-                var claims = new List<Claim>
+                var claims = new List<Claim>      //si los datos son correctos creamos una lista de claim/autorizaciones de a quién podemos dejar ingresar al sistema(clientes, administradores) 
                 {
-                    new Claim("Client", user.Email),
+                    new Claim("Client", user.Email),         //nuevo claim, llamado "client", cuyo valor será el mail de esa persona
                 };
 
                 var claimsIdentity = new ClaimsIdentity(
                     claims,
-                    CookieAuthenticationDefaults.AuthenticationScheme
+                    CookieAuthenticationDefaults.AuthenticationScheme  //creamos la identidad del usuario, pasandole la lista anterior y el esquema basado en cookies
                     );
 
-                await HttpContext.SignInAsync(             
+                await HttpContext.SignInAsync(               //una vez hecha todad la configuración creamos la cookie, esta ahora viajará en cada petición
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity));
 

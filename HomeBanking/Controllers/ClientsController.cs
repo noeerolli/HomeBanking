@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace HomeBanking.Controllers
 
@@ -20,14 +23,19 @@ namespace HomeBanking.Controllers
     {
 
         private IClientRepository _clientRepository;
+        private AccountsController _accountsController;
+        private CardsController _cardsController;
+        
+      
 
 
 
-        public ClientsController(IClientRepository clientRepository) //el clientController necesita para su creacion de un repositorio
+        public ClientsController(IClientRepository clientRepository,  AccountsController accountsController, CardsController cardsController) //el clientController necesita para su creacion de un repositorio
 
         {
             _clientRepository = clientRepository;       //el clientRepository q estamos recibiendo por el constructor, lo asignamos a la propiedad privada, para luego poder usarlo en el controlador
-
+            _accountsController = accountsController;
+            _cardsController = cardsController;
         }
         //ya tenemos acceso a los métodos definidos en la interfaz
 
@@ -214,25 +222,25 @@ namespace HomeBanking.Controllers
 
 
 
-        [HttpGet("current")]      
+        [HttpGet("current")]      //cuando el cliente ya esta logueado se hace la petición a get current
         public IActionResult GetCurrent()
         {
             try
-            {
-                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+            {       //chequeamos si la persona es cliente con la info que trae la cookie 
+                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;     //chequeamos q el mail no esté vacío/ devuelve el valor del reclamo (el cual configuramos sea el mail)
                 if (email == string.Empty)
                 {
-                    return NotFound();
+                    return Forbid();
                 }
 
-                Client client = _clientRepository.FindByEmail(email);
+                Client client = _clientRepository.FindByEmail(email);     //chequeamos si se encuentra en nuestra base de datos
 
                 if (client == null)
                 {
                     return Forbid();
                 }
 
-                var clientDTO = new ClientDTO
+                var clientDTO = new ClientDTO         //si encontramos al cliente traemos todos los datos
                 {
                     Id = client.Id,
                     Email = client.Email,
@@ -275,8 +283,8 @@ namespace HomeBanking.Controllers
         }
 
 
-        [HttpPost]   //método post envío datos a la base de datos
-        public IActionResult Post([FromBody] Client client)
+        [HttpPost]   
+        public IActionResult Post([FromBody] Client client)    //creamos un cliente, recibimos los datos en el cuerpo de la solicitud
         {
             try
             {
@@ -301,8 +309,117 @@ namespace HomeBanking.Controllers
                 };
 
                 _clientRepository.Save(newClient);
+                _accountsController.Post(newClient.Id);
+
+
                 return Created("", newClient);
 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("current/accounts")]
+        public IActionResult PostAccounts()
+        {
+            try
+            {
+                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+                if (email == string.Empty)
+                {
+                    return Forbid();
+                }
+                Client client = _clientRepository.FindByEmail(email);
+
+                if (client == null)
+                {
+                    return NotFound();
+                }
+
+                if (client.Accounts.Count > 2)
+                {
+                    return StatusCode(403, "Ya posse el tope máximo de 3 cuentas");
+                }
+
+                var account = _accountsController.Post(client.Id);
+                if (account == null)
+                {
+                    return StatusCode(500, "Error al crear la cuenta");
+                }
+                return Created("", account);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        
+
+        [HttpPost("current/cards")]
+        public IActionResult PostCards([FromBody] Card card)
+        {
+            try
+            {
+                
+                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+                if (email == string.Empty)
+                {
+                    return Forbid();
+                }
+                Client client = _clientRepository.FindByEmail(email);
+                
+                if (client == null)
+                {
+                    return NotFound();
+                }
+                if(card.Type != CardType.CREDIT.ToString() && card.Type != CardType.DEBIT.ToString())
+                {
+                    return BadRequest("El tipo de tarjeta no es valido");
+                }
+                if (card.Color != CardColor.GOLD.ToString() && card.Color != CardColor.SILVER.ToString() && card.Type != CardColor.SILVER.ToString())
+                {
+                    return BadRequest("El color de tarjeta no es valido");
+                }
+                
+                
+                int CardCount = client.Cards.Where(c => c.Type == card.Type).Count();
+                if (CardCount > 2)
+                {
+                    return StatusCode(403, "Ya tiene 3 tarjetas del mismo tipo");
+                }
+                int sameCard = client.Cards.Where(c => card.Color == card.Color && c.Type ==card.Type).Count();
+                if (sameCard == 1)
+                {
+                    return StatusCode(403, "Ya tiene una tarjeta del mismo tipo y color");
+                }
+
+
+
+                Card newCard = new Card
+                {
+                    ClientId = client.Id,
+                    CardHolder = client.FirstName + " " + client.LastName,
+                    Color = card.Color,
+                    Cvv = new Random().Next(100000, 999999),
+                    FromDate = DateTime.Now,
+                    Number = new Random().Next(100000, 999999).ToString() + "-" +
+                             new Random().Next(100000, 999999).ToString() + "-" +
+                             new Random().Next(100000, 999999).ToString() + " " +
+                             new Random().Next(100000, 999999).ToString(),
+                    ThruDate = DateTime.Now.AddYears(5),
+                    Type = card.Type
+
+                };
+
+                var newCardDTO = _cardsController.Post(newCard);
+                if(newCard == null)
+                {
+                    return StatusCode(500, "Error en la información");
+                }
+                return Created("", newCardDTO);
             }
             catch (Exception ex)
             {
@@ -315,3 +432,16 @@ namespace HomeBanking.Controllers
 
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
