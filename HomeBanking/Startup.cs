@@ -45,11 +45,16 @@ namespace HomeBanking
 
             services.AddScoped<ICardRepository, CardRepository>();
 
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
+
             services.AddScoped<AccountsController>();
 
             services.AddScoped<CardsController>();
 
             services.AddScoped<ClientsController>();
+
+            services.AddScoped<TransactionsController>();
+
             //configuracion de la autenticacion y la autorización
             //autenticación
 

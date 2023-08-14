@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
+using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace HomeBanking.Controllers
 
@@ -26,8 +28,6 @@ namespace HomeBanking.Controllers
         private AccountsController _accountsController;
         private CardsController _cardsController;
         
-      
-
 
 
         public ClientsController(IClientRepository clientRepository,  AccountsController accountsController, CardsController cardsController) //el clientController necesita para su creacion de un repositorio
@@ -222,7 +222,7 @@ namespace HomeBanking.Controllers
 
 
 
-        [HttpGet("current")]      //cuando el cliente ya esta logueado se hace la petición a get current
+        [HttpGet("current")]      //cuando el cliente ya esta logueado se hace la petición a get current - si esta todo correcto traemos todos sus datos
         public IActionResult GetCurrent()
         {
             try
@@ -290,7 +290,40 @@ namespace HomeBanking.Controllers
             {
                 //validamos datos antes
                 if (String.IsNullOrEmpty(client.Email) || String.IsNullOrEmpty(client.Password) || String.IsNullOrEmpty(client.FirstName) || String.IsNullOrEmpty(client.LastName))
-                    return StatusCode(403, "datos inválidos");
+                    return StatusCode(400, "datos inválidos");
+
+
+
+                //verificar que nombre y apellido tengan al menos 3 caracteres
+                if (client.FirstName.Length < 3 || client.LastName.Length < 3)
+                {
+                    
+                    return StatusCode(400, "Nombre y apellido deben tener mas de 2 letras");
+                }
+                //verificar q no tenga carcteres especiales nombre y apell
+                if (!Regex.IsMatch(client.FirstName, @"^[a-zA-Z\s]+$") || !Regex.IsMatch(client.LastName, @"^[a-zA-Z\s]+$"))
+                {
+                    
+                    return StatusCode(400, "");
+                }
+
+                //verificar si el email es válido
+                if (!(Regex.IsMatch(client.Email, @"^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$")))
+                {
+                    
+                    return StatusCode(400, "Email invalido");
+                }
+
+
+                //pass debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número
+                if (!(client.Password.Length >= 8 && client.Password.Any(char.IsUpper) && client.Password.Any(char.IsDigit) && client.Password.Any(char.IsDigit)))
+                {
+                    
+                    return StatusCode(403, "La contraseña debe tener al menos 8 digitos, una letra mayuscula, una minuscula y un numero");
+                }
+
+
+
 
                 //buscamos si ya existe el usuario
                 Client user = _clientRepository.FindByEmail(client.Email);
@@ -309,7 +342,7 @@ namespace HomeBanking.Controllers
                 };
 
                 _clientRepository.Save(newClient);
-                _accountsController.Post(newClient.Id);
+                _accountsController.Post(newClient.Id);    // enviamos para crear cuenta al nuevo cliente
 
 
                 return Created("", newClient);
@@ -321,7 +354,35 @@ namespace HomeBanking.Controllers
             }
         }
 
-        [HttpPost("current/accounts")]
+
+        [HttpGet("current/accounts")]      //trae todas las cuentas del cliente
+        public IActionResult GetAccounts()
+        {
+            try
+            {
+                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+                if (email == string.Empty)
+                {
+                    return Forbid();
+                }
+                Client client = _clientRepository.FindByEmail(email);
+
+                if (client == null)
+                {
+                    return NotFound();
+                }
+
+                var accounts = client.Accounts;
+                return Ok(accounts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        [HttpPost("current/accounts")]     //p/ crear cuenta - c/ post al accountsController
         public IActionResult PostAccounts()
         {
             try
@@ -358,7 +419,7 @@ namespace HomeBanking.Controllers
 
         
 
-        [HttpPost("current/cards")]
+        [HttpPost("current/cards")]   //p/ crear tarjeta - c/ post al cardsController
         public IActionResult PostCards([FromBody] Card card)
         {
             try
@@ -420,6 +481,35 @@ namespace HomeBanking.Controllers
                     return StatusCode(500, "Error en la información");
                 }
                 return Created("", newCardDTO);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+
+
+        [HttpGet("current/cards")] // traer todas las tarjetas
+        public IActionResult GetCards()
+        {
+            try
+            {
+                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+                if (email == string.Empty)
+                {
+                    return Forbid();
+                }
+                Client client = _clientRepository.FindByEmail(email);
+
+                if (client == null)
+                {
+                    return NotFound();
+                }
+
+                var cards = client.Cards;
+                return Ok(cards);
             }
             catch (Exception ex)
             {

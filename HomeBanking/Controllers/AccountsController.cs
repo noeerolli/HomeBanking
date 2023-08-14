@@ -173,7 +173,7 @@ namespace HomeBanking.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost]     //crear cuenta
         public IActionResult Post(long clientId)
         {
             try
@@ -194,8 +194,8 @@ namespace HomeBanking.Controllers
                     CreationDate = newAccount.CreationDate,
                     Number = newAccount.Number
                 };
-                return Created("", newAccDTO);
-                
+                return Created("", newAccDTO);  //respuesta con el código de estado 201 y la información de la cuenta creada
+
             }
             catch
             {

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeBanking.Repositories
 {
-    public class RepositoryBase<T> : IRepositoryBase<T> where T : class
+    public class RepositoryBase<T> : IRepositoryBase<T> where T : class       //indicamos q el tipo<T> solo puede ser clase
     {
         protected HomeBankingContext RepositoryContext { get; set; }    //creamos una propiedad con el tipo de dato HomeBContext, le damos un nombre de variable y sus getter y setter  / protected porq puede acceder la clase y sus desendientes
 
