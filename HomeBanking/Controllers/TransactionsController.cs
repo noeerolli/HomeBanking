@@ -54,7 +54,7 @@ namespace HomeBanking.Controllers
                     return Forbid("Monto o descripcion no proporcionados.");
                 }
 
-                //buscamos las cuentas
+                //buscamos la cuenta de origen
                 Account fromAccount = _accountRepository.FindByNumber(transferDTO.FromAccountNumber);
                 if (fromAccount == null)
                 {

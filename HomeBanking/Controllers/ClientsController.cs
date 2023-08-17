@@ -64,7 +64,6 @@ namespace HomeBanking.Controllers
                 {
 
                     var newClientDTO = new ClientDTO   //por cada client creamos un nuevo ClientDto
-
                     {
 
                         Id = client.Id,
@@ -288,6 +287,7 @@ namespace HomeBanking.Controllers
         {
             try
             {
+
                 //validamos datos antes
                 if (String.IsNullOrEmpty(client.Email) || String.IsNullOrEmpty(client.Password) || String.IsNullOrEmpty(client.FirstName) || String.IsNullOrEmpty(client.LastName))
                     return StatusCode(400, "datos inválidos");
@@ -304,7 +304,7 @@ namespace HomeBanking.Controllers
                 if (!Regex.IsMatch(client.FirstName, @"^[a-zA-Z\s]+$") || !Regex.IsMatch(client.LastName, @"^[a-zA-Z\s]+$"))
                 {
                     
-                    return StatusCode(400, "");
+                    return StatusCode(400, "Error en los datos");
                 }
 
                 //verificar si el email es válido
@@ -316,7 +316,7 @@ namespace HomeBanking.Controllers
 
 
                 //pass debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número
-                if (!(client.Password.Length >= 8 && client.Password.Any(char.IsUpper) && client.Password.Any(char.IsDigit) && client.Password.Any(char.IsDigit)))
+                if (!(client.Password.Length >= 8 && client.Password.Any(char.IsUpper) && client.Password.Any(char.IsDigit) && client.Password.Any(char.IsLower)))
                 {
                     
                     return StatusCode(403, "La contraseña debe tener al menos 8 digitos, una letra mayuscula, una minuscula y un numero");
@@ -373,7 +373,7 @@ namespace HomeBanking.Controllers
                 }
 
                 var accounts = client.Accounts;
-                return Ok(accounts);
+                return Ok(accounts);            //devuelve una respuesta 200 y los datos
             }
             catch (Exception ex)
             {
@@ -401,10 +401,11 @@ namespace HomeBanking.Controllers
 
                 if (client.Accounts.Count > 2)
                 {
-                    return StatusCode(403, "Ya posse el tope máximo de 3 cuentas");
+                    return StatusCode(403, "Ya posse el tope maximo de 3 cuentas");
                 }
 
                 var account = _accountsController.Post(client.Id);
+
                 if (account == null)
                 {
                     return StatusCode(500, "Error al crear la cuenta");
@@ -476,6 +477,7 @@ namespace HomeBanking.Controllers
                 };
 
                 var newCardDTO = _cardsController.Post(newCard);
+
                 if(newCard == null)
                 {
                     return StatusCode(500, "Error en la información");
@@ -487,7 +489,6 @@ namespace HomeBanking.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
 
 
 

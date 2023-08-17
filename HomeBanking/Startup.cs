@@ -34,7 +34,7 @@ namespace HomeBanking
 
             services.AddControllers().AddJsonOptions(x =>
 
-             x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve); //permite que los controladores respondan a las solicitudes http
+             x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve); 
 
             // configuramos y agregamos un contexto de base de datos, disponible para cuando se necesite 
             services.AddDbContext<HomeBankingContext>(options => options.UseSqlServer(Configuration.GetConnectionString("HomeBankingConnection")));
@@ -46,6 +46,10 @@ namespace HomeBanking
             services.AddScoped<ICardRepository, CardRepository>();
 
             services.AddScoped<ITransactionRepository, TransactionRepository>();
+
+            services.AddScoped<ILoanRepository, LoanRepository>();
+
+            services.AddScoped<IClientLoanRepository, ClientLoanRepository>();
 
             services.AddScoped<AccountsController>();
 
