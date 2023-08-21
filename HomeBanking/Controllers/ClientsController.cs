@@ -374,7 +374,29 @@ namespace HomeBanking.Controllers
 
                 var accounts = client.Accounts;
 
-                return Ok(accounts);            //devuelve una respuesta 200 y los datos
+
+                var accsDTO = new List<AccountDTO>();
+
+
+
+                foreach (Account account in accounts)
+
+                {
+
+                    var newAccDTO = new AccountDTO   //por cada client creamos un nuevo ClientDto
+                    {
+
+                        Id = account.Id,
+                        Number = account.Number,
+                        CreationDate = account.CreationDate,
+                        Balance = account.Balance
+
+                    };
+                    accsDTO.Add(newAccDTO);
+                }
+
+                return Ok(accsDTO);            //devuelve una respuesta 200 y los datos
+                        //devuelve una respuesta 200 y los datos
             }
             catch (Exception ex)
             {
@@ -442,7 +464,7 @@ namespace HomeBanking.Controllers
                 {
                     return BadRequest("El tipo de tarjeta no es valido");
                 }
-                if (card.Color != CardColor.GOLD.ToString() && card.Color != CardColor.SILVER.ToString() && card.Type != CardColor.SILVER.ToString())
+                if (card.Color != CardColor.GOLD.ToString() && card.Color != CardColor.TITANIUM.ToString() && card.Color != CardColor.SILVER.ToString())
                 {
                     return BadRequest("El color de tarjeta no es valido");
                 }
@@ -453,7 +475,7 @@ namespace HomeBanking.Controllers
                 {
                     return StatusCode(403, "Ya tiene 3 tarjetas del mismo tipo");
                 }
-                int sameCard = client.Cards.Where(c => card.Color == card.Color && c.Type ==card.Type).Count();
+                int sameCard = client.Cards.Where(c => c.Color == card.Color && c.Type ==card.Type).Count();
                 if (sameCard == 1)
                 {
                     return StatusCode(403, "Ya tiene una tarjeta del mismo tipo y color");
@@ -511,7 +533,33 @@ namespace HomeBanking.Controllers
                 }
 
                 var cards = client.Cards;
-                return Ok(cards);
+
+                var crdsDTO = new List<CardDTO>();
+
+
+
+                foreach (Card card in cards)
+
+                {
+
+                    var newCrdDTO = new CardDTO   //por cada client creamos un nuevo ClientDto
+                    {
+
+                        Id = card.Id,
+                        CardHolder = card.CardHolder,
+                        Type = card.Type,
+                        Color = card.Color,
+                        Number = card.Number,
+                        Cvv = card.Cvv,
+                        FromDate = card.FromDate,
+                        ThruDate = card.ThruDate,
+
+
+                    };
+                    crdsDTO.Add(newCrdDTO);
+                }
+
+                return Ok(crdsDTO);
             }
             catch (Exception ex)
             {
