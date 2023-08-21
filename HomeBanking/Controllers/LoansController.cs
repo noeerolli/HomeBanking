@@ -103,7 +103,7 @@ namespace HomeBanking.Controllers
                 {
                     Type = TransactionType.CREDIT.ToString(),
                     Amount = loanApplicationDTO.Amount,
-                    Description = loan.Name.ToString() + " Prestamo aprobado",
+                    Description = loan.Name.ToString() + " Prestamo Aprobado",
                     Date = DateTime.Now,
                     AccountId = account.Id
                 };

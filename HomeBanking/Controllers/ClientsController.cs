@@ -298,20 +298,20 @@ namespace HomeBanking.Controllers
                 if (client.FirstName.Length < 3 || client.LastName.Length < 3)
                 {
                     
-                    return StatusCode(400, "Nombre y apellido deben tener mas de 2 letras");
+                    return BadRequest("Nombre y apellido deben tener mas de 2 letras");
                 }
                 //verificar q no tenga carcteres especiales nombre y apell
                 if (!Regex.IsMatch(client.FirstName, @"^[a-zA-Z\s]+$") || !Regex.IsMatch(client.LastName, @"^[a-zA-Z\s]+$"))
                 {
                     
-                    return StatusCode(400, "Error en los datos");
+                    return BadRequest("Error en los datos");
                 }
 
-                //verificar si el email es válido
-                if (!(Regex.IsMatch(client.Email, @"^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$")))
+                
+                if (!(Regex.IsMatch(client.Email, @"^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$")))   
                 {
                     
-                    return StatusCode(400, "Email invalido");
+                    return BadRequest( "Email invalido");
                 }
 
 
@@ -319,7 +319,7 @@ namespace HomeBanking.Controllers
                 if (!(client.Password.Length >= 8 && client.Password.Any(char.IsUpper) && client.Password.Any(char.IsDigit) && client.Password.Any(char.IsLower)))
                 {
                     
-                    return StatusCode(403, "La contraseña debe tener al menos 8 digitos, una letra mayuscula, una minuscula y un numero");
+                    return BadRequest( "La contraseña debe tener al menos 8 digitos, una letra mayuscula, una minuscula y un numero");
                 }
 
 
@@ -373,6 +373,7 @@ namespace HomeBanking.Controllers
                 }
 
                 var accounts = client.Accounts;
+
                 return Ok(accounts);            //devuelve una respuesta 200 y los datos
             }
             catch (Exception ex)

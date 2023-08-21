@@ -12,7 +12,7 @@ namespace HomeBanking.Controllers
     {
 
         private ICardRepository _cardRepository;
-        private ClientsController _clientsController;
+        //private ClientsController _clientsController;
 
         public CardsController(ICardRepository cardRepository)
         {
@@ -23,7 +23,7 @@ namespace HomeBanking.Controllers
 
 
 
-        public IActionResult Post(Card newCard)//ver q pasar
+        public IActionResult Post(Card newCard)
         {
             try
             {
